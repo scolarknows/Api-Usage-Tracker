@@ -89,12 +89,9 @@ A full-stack, production-ready web application where authenticated users registe
 - MongoDB running locally or a MongoDB Atlas URI
 
 ### 1. Installation
-In the project root:
+This is an npm workspaces monorepo. One command installs all dependencies:
 ```bash
 npm install
-cd server && npm install
-cd ../client && npm install
-cd ..
 ```
 
 ### 2. Configuration
@@ -107,15 +104,24 @@ cp client/.env.example client/.env
 ### 3. Verification & Tests
 Run typecheck, lint, and test suites across all packages:
 ```bash
-# Typecheck
+# Typecheck (both packages)
 npm run typecheck
 
-# Linting
+# Linting (both packages)
 npm run lint
 
-# Run all test suites
+# Run all test suites (both packages)
 npm run test
 ```
+
+**Test coverage breakdown**:
+| Package | Test Files | Tests |
+|:---|:---|:---|
+| `server` | 5 (SSRF, Auth, URL routes, Monitor, Stats) | 77 |
+| `client` | 2 (StatusBadge, ThemeContext) | 4 |
+| **Total** | **7** | **81** |
+
+> **Note**: Server tests require network access (MongoMemoryServer). Run from a terminal with internet access, not inside a restricted sandbox.
 
 ### 4. Running Locally
 Run server and client concurrently:
@@ -124,6 +130,37 @@ npm run dev
 ```
 - Client runs on: `http://localhost:5173`
 - Server runs on: `http://localhost:4000`
+
+---
+
+## Project Structure
+
+```
+api-uptime-monitor/
+├── client/                      # React 19 SPA (Vite)
+│   ├── src/
+│   │   ├── api/                 # Axios client with JWT interceptor
+│   │   ├── components/          # Header, Modals, Charts, Badges
+│   │   ├── context/             # AuthContext, ThemeContext
+│   │   ├── hooks/               # useUrls, useChecks (with auto-refresh)
+│   │   ├── pages/               # Login, Signup, Dashboard, Detail
+│   │   ├── types/               # Shared TypeScript interfaces
+│   │   └── lib/                 # Utilities (cn, date formatting)
+│   ├── .env.example
+│   └── vite.config.ts
+└── server/                      # Express API
+    ├── src/
+    │   ├── config/              # Env validation (Zod), constants
+    │   ├── db/                  # Mongoose connection
+    │   ├── jobs/                # node-cron scheduler
+    │   ├── middleware/          # Auth, rate-limit, validate, error-handler
+    │   ├── models/              # User, MonitoredUrl, Check (Mongoose)
+    │   ├── repositories/        # DB access layer
+    │   ├── routes/              # Auth, URL, Health, Internal routes
+    │   └── services/            # Auth, Monitor, SSRF, Stats, Token, URLs
+    ├── .env.example
+    └── vitest.config.ts
+```
 
 ---
 
@@ -149,6 +186,8 @@ Render free services spin down after 15 minutes of inactivity. To keep checks fi
 4. Schedule: Every 5 minutes (`*/5 * * * *`)
 5. Request Header: `x-cron-secret: <YOUR_CRON_SECRET>`
 
+> **Tip**: Generate a strong secret with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`. Set the same value as `CRON_SECRET` in Render and as the header value in cron-job.org.
+
 ### 4. Frontend (Vercel)
 1. Import repository on Vercel.
 2. Root Directory: `client`
@@ -156,6 +195,7 @@ Render free services spin down after 15 minutes of inactivity. To keep checks fi
 4. Build Command: `npm run build`
 5. Output Directory: `dist`
 6. Set Environment Variable: `VITE_API_URL=https://your-render-backend.onrender.com/api`
+7. After Vercel deploys, go back to Render and update `CLIENT_ORIGIN` to your Vercel URL (e.g. `https://your-app.vercel.app`). This is required for CORS to allow frontend requests.
 
 ---
 
