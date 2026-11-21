@@ -1,0 +1,28 @@
+---
+description: Shared TypeScript rules for the API Uptime & Latency Monitor
+alwaysApply: true
+---
+
+# TypeScript
+
+- `strict: true` in every `tsconfig`. No implicit `any`.
+- Type all function parameters and return values explicitly.
+- Prefer `interface` for object shapes and props; use `type` for unions.
+- Use named exports only: `export function Component()`. No default exports, except where a tool requires one (for example `vite.config.ts`).
+- File naming: `kebab-case` for files; `PascalCase` for React components and types; `camelCase` for functions and variables; `UPPER_SNAKE_CASE` for constants.
+- Validate all external input at runtime with Zod (request bodies, query params, env vars). Share no code between client and server in v1; duplicate small types instead.
+- No `console.log` in committed code. Use the logger on the server; remove debug output on the client.
+- Keep functions short and single-purpose. Prefer early returns over deep nesting.
+- Comments explain why, not what. Public functions in `services/` get a one-line doc comment.
+
+```ts
+// Bad: untyped parameter and a default export
+export default function save(input) {
+  console.log(input);
+}
+
+// Good: explicit types and a named export
+export function saveUrl(input: CreateUrlInput): Promise<MonitoredUrl> {
+  return urlRepository.create(input);
+}
+```

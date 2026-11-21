@@ -1,0 +1,24 @@
+---
+description: Vitest and API test requirements
+globs: "**/*.test.ts,**/*.test.tsx"
+alwaysApply: false
+---
+
+# Testing
+
+- Vitest in both packages. `supertest` for API tests. `mongodb-memory-server` for database tests.
+- SSRF tests must cover `127.0.0.1`, `localhost`, `169.254.169.254`, `10.x`, `192.168.x`, `172.16.x`, IPv6 loopback, IPv4-mapped IPv6, a hostname that resolves to a private IP, a redirect to a private IP, and a valid public URL.
+- Auth tests: signup, duplicate email, login success and failure, protected route without a token.
+- Authorization: user A cannot read or delete user B's URLs. The 6th URL is rejected.
+- Monitor tests, with a mocked HTTP client: up, down, timeout, and non-2xx.
+- Frontend render tests: status badge, add-URL form validation, and the theme toggle.
+- Tests must be deterministic: no real network calls and no dependence on wall-clock time.
+- Do not delete or weaken a test to make it pass. Fix the code or explain why the test is wrong.
+
+```ts
+// Inject the DNS resolver and HTTP client. Do not call the network.
+const result = await checkUrl("https://example.com", {
+  resolve: async () => [{ address: "93.184.216.34", family: 4 }],
+  request: async () => ({ statusCode: 200, headers: {} }),
+});
+```

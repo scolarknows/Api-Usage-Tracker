@@ -1,0 +1,30 @@
+---
+description: Backend architecture and security rules
+globs: server/**
+alwaysApply: false
+---
+
+# Backend
+
+Layering is `route -> controller -> service -> repository`.
+
+- Controllers parse and validate requests, call a service, and format the response. No business logic.
+- Services hold business logic and must not import Express types (`Request`, `Response`).
+- Repositories own all Mongoose and MongoDB access. No `Model.find()` or aggregation in services or controllers.
+- Middleware handles auth, validation, logging, and rate limiting. Routes are path, middleware, and controller only.
+- Throw `AppError` (`statusCode`, `message`, `isOperational`) for expected failures. Wrap async handlers in `asyncHandler`. The global error middleware returns `{ "error": "message" }` and never leaks stacks in production.
+- Auth middleware sets `req.user` to `{ id, email }` from the JWT. Controllers read the user id from it, never from the body.
+- Monitoring uses `performance.now()`, concurrency 10, a 10s timeout, at most 3 redirects, and `HEAD` then `GET`. A run lock skips overlapping ticks. One URL failure must not stop the run.
+- The scheduler imports the monitor service and contains no checking logic. Compare `x-cron-secret` in constant time.
+- On `SIGTERM` and `SIGINT`: stop the scheduler, close HTTP, close MongoDB, then exit. Fail fast when env vars are invalid.
+
+# Security
+
+- Every user-supplied URL goes through `services/ssrf.ts`. No other module may request a user URL. Allow only `http`/`https`, reject credentials, resolve DNS, and reject private, loopback, link-local, CGNAT, reserved, and IPv4-mapped IPv6 addresses. Connect to the validated IP and re-validate every redirect.
+- bcrypt cost 12. Never log, return, or store plaintext passwords.
+- JWT from env, 7-day expiry, `Authorization: Bearer` only. Never accept tokens from query strings.
+- Routes with `:id` must belong to `req.user.id`. Return 404 otherwise.
+- Validate input with Zod. Use `express-mongo-sanitize`. Never build queries from raw request objects.
+- Strict rate limit on `/auth/*`, moderate elsewhere. `helmet`, CORS limited to `CLIENT_ORIGIN`, JSON body limit 10kb.
+- Secrets only from the environment. Never log passwords, tokens, or the cron secret.
+- Login errors are generic and must not reveal whether an email exists.

@@ -1,0 +1,27 @@
+---
+description: Frontend and design-system rules for the Vite SPA
+globs: client/**
+alwaysApply: false
+---
+
+# Frontend
+
+This is a client-rendered Vite SPA. Do not use Next.js APIs, `"use client"`, server actions, or Server Components.
+
+- Functional components. Props interface directly above the component. Destructure props in the signature. Named exports. Files in `kebab-case`.
+- Keep components under 80 lines. Use `cn()` (`clsx` + `tailwind-merge`) for conditional classes.
+- Server data goes through `api/` and hooks (`use-urls`, `use-checks`) with loading, error, and data, refreshing every 60 seconds. No React Query, Redux, or Zustand.
+- Context only for auth and theme. Detail range uses `useSearchParams`. Clean up with `AbortController`.
+- `localStorage` is only for the theme choice and the auth token.
+- Axios attaches the JWT and, on 401, clears the token and redirects to login.
+- Forms show inline errors. Other failures use `sonner`. Every data view has skeleton, empty, and error states. Routes sit inside an error boundary.
+- Recharts `LineChart` inside `ResponsiveContainer`. Failed checks are gaps or red dots, never zero latency.
+
+# Design
+
+- Tokens: `--color-wine` `#7C0E44`, `--color-mauve` `#AA5E7A`, `--color-rose` `#D49A9A`, `--color-cream` `#F2DACE`. Never hardcode those hex values in components.
+- Dark mode is class-based via `@custom-variant dark (&:where(.dark, .dark *));`. Default to the OS preference, persist in `localStorage`, and apply the class in `index.html` before first paint. Dark background is `#1E0A14`.
+- Story Script is for the logo, page headings, and card titles only. Body is a system sans. URLs, latency, and tables are monospace.
+- Status includes text (Online, Offline, Pending), not color alone.
+- Mobile first. The table becomes stacked cards below 768px. Touch targets are at least 44px. No horizontal page scroll. Visible focus rings. Keyboard-operable dialogs.
+- Tailwind utilities only, except tokens, the font class, and theme setup. No component library.

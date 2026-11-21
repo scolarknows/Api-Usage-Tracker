@@ -1,0 +1,13 @@
+export const MAX_URLS_PER_USER = 5;
+export const BCRYPT_COST = 12;
+export const JWT_EXPIRES_IN_SECONDS = 60 * 60 * 24 * 7;
+export const CHECK_TIMEOUT_MS = 10_000;
+export const MAX_REDIRECTS = 3;
+export const CHECK_CONCURRENCY = 10;
+export const USER_AGENT = 'UptimeMonitorBot/1.0';
+export const CHART_MAX_POINTS = 300;
+export const CHECK_TTL_SECONDS = 604_800;
+export const AUTH_WINDOW_MS = 15 * 60 * 1000;
+export const AUTH_RATE_LIMIT = 10;
+export const API_RATE_LIMIT = 300;
+export const MAX_NAME_LENGTH = 60;

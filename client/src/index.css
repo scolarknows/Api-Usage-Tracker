@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-wine: #7C0E44;
+  --color-mauve: #AA5E7A;
+  --color-rose: #D49A9A;
+  --color-surface: #F2DACE;
+  --color-dark-bg: #1E0A14;
+  --color-dark-card: #2A111E;
+  --color-dark-surface: #381A2A;
+
+  --font-story: "Story Script", cursive, sans-serif;
+  --font-mono: ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.story-script-regular {
+  font-family: "Story Script", cursive, sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
