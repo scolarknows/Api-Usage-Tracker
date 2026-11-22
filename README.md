@@ -201,7 +201,7 @@ This keeps the Render instance awake and ensures checks run reliably.
 3. Build command: `npm install && npm run build`
 4. Start command: `npm start`
 5. Environment variables: `PORT`, `MONGODB_URI`, `JWT_SECRET`, `CLIENT_ORIGIN`, `CRON_SECRET`, `NODE_ENV=production`
-6. Add external cron (cron-job.org) calling `POST /api/internal/run-checks` every 5 minutes.
+6. Add external cron (cron-job.org) calling `POST /api/internal/run-checks` every 5 minutes
 
 ### Frontend (Vercel)
 
