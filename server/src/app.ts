@@ -17,7 +17,23 @@ export function createApp(): express.Express {
   app.enable('trust proxy'); // Trust X-Forwarded-For from Render/Vercel proxy
   app.disable('x-powered-by');
   app.use(helmet());
-  app.use(cors({ origin: env.CLIENT_ORIGIN }));
+  const allowedOrigins = env.CLIENT_ORIGIN.split(',').map((o) => o.trim());
+  app.use(
+    cors({
+      origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps, curl, server-to-server)
+        if (!origin) return callback(null, true);
+        if (
+          allowedOrigins.includes(origin) ||
+          (origin.endsWith('.vercel.app') && allowedOrigins.some((o) => o.includes('vercel.app')))
+        ) {
+          return callback(null, true);
+        }
+        return callback(new Error(`CORS blocked origin: ${origin}`));
+      },
+      credentials: true,
+    }),
+  );
   app.use(express.json({ limit: '10kb' }));
   app.use(mongoSanitize());
   app.use('/api', apiLimiter);
