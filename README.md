@@ -1,211 +1,234 @@
 # API Uptime & Latency Monitor
 
-A full-stack, production-ready web application where authenticated users register API or website URLs. A background scheduler checks each URL every 5 minutes, calculates HTTP status and latency, and a responsive frontend dashboard renders live statuses and historical analytics.
+A full-stack web application for monitoring API/website uptime and latency. Users sign up, add up to 5 URLs, and a background scheduler checks each URL every 5 minutes. The dashboard shows status badges, uptime percentages, and latency charts.
 
----
+## Live Demo
 
-## Architecture Overview
+- **Frontend (Vercel):** https://api-usage-tracker-rose.vercel.app
+- **Backend (Render):** https://api-usage-tracker-backend.onrender.com
+- **Database:** MongoDB Atlas (free tier)
+
+## Architecture
 
 ```
-                      +-----------------------------+
-                      |         React 19 SPA        |
-                      |     (Vite + Tailwind v4)     |
-                      +--------------+--------------+
-                                     |
-                             REST API (JSON)
-                      +--------------v--------------+
-                      |      Express + Node.js      |
-                      |      (TypeScript ESNext)    |
-                      +--------------+--------------+
-                                     |
-               +---------------------+---------------------+
-               |                     |                     |
-     +---------v---------+ +---------v---------+ +---------v---------+
-     |   MongoDB Atlas   | |  node-cron / HTTP  | |  SSRF Guard & DNS |
-     | (Mongoose Models) | |  Internal Scheduler| |  Rebinding Engine |
-     +-------------------+ +-------------------+ +-------------------+
+┌─────────────┐     HTTPS      ┌─────────────┐     MongoDB      ┌─────────────┐
+│   Browser   │ ◄─────────────► │   Express   │ ◄──────────────► │   MongoDB   │
+│   (React)   │                 │   (Node.js) │                  │   (Atlas)   │
+└─────────────┘                 └─────────────┘                  └─────────────┘
+       ▲                              ▲
+       │         External Cron        │
+       └──────────────────────────────┘
+        cron-job.org / UptimeRobot
+        calls POST /api/internal/run-checks
+        every 5 minutes with x-cron-secret
 ```
 
-- **Client (`/client`)**: React 19, TypeScript, Vite, Tailwind CSS v4, React Router 7, Recharts, Sonner toasts, Lucide icons.
-- **Server (`/server`)**: Node.js, Express, TypeScript, MongoDB (Mongoose), JWT authentication, Zod validation, Pino logger, Node-cron, Helmet, Rate Limiting, SSRF Protection.
+### Monorepo Structure
 
----
+```
+/client   Vite + React 19 + TypeScript + Tailwind CSS v4 + Recharts
+/server   Express + TypeScript + Mongoose + JWT + node-cron
+```
 
-## Features
-
-- **Authentication & Security**:
-  - Secure bcrypt password hashing (cost 12), JWT authentication (7-day bearer tokens).
-  - Rate limiting on authentication routes (10 requests per 15 min per IP) and API endpoints.
-  - NoSQL injection protection (`express-mongo-sanitize`), request body size capped at 10kb.
-  - Strict Helmet security headers and CORS restricted to configured client origin.
-- **SSRF Protection & DNS Rebinding Defense**:
-  - Allows only `http` / `https` URLs and rejects embedded credentials (`user:pass@`).
-  - Blocks local, private, reserved, loopback, CGNAT, and link-local address spaces (`127.0.0.0/8`, `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, `169.254.0.0/16`, `100.64.0.0/10`, `0.0.0.0/8`, `::1`, `fc00::/7`, `fe80::/10`, IPv4-mapped IPv6).
-  - Re-validates at check time and connects directly to the resolved IP to mitigate DNS rebinding.
-  - Re-validates redirect targets up to 3 redirects.
-- **Monitoring Engine & Dual Scheduler**:
-  - Checks URLs with bounded concurrency (10 parallel requests) and 10s timeouts.
-  - Monotonic high-resolution clock (`performance.now()`) for latency calculation.
-  - `HEAD` with fallback to `GET` on 405/501 status codes.
-  - Dual scheduling: In-process `node-cron` every 5 minutes + protected `POST /api/internal/run-checks` endpoint for external schedulers (e.g. cron-job.org / UptimeRobot) to keep free-tier instances (like Render) awake.
-  - Overlapping run lock prevents duplicate monitoring runs.
-- **Data Retention & Capacity**:
-  - Check history is automatically purged after 7 days using MongoDB TTL indexes (`expireAfterSeconds: 604800`).
-  - Compound indexes on `{ urlId, timestamp }` and `{ userId, url }` ensure fast range and uniqueness queries.
-  - Per-user cap of 5 URLs: ~1,440 checks per user every 5 days, staying well within the free MongoDB Atlas tier (512MB).
-- **Dashboard & Analytics**:
-  - Light mode (Cream `#F2DACE` & Wine `#7C0E44`) and Dark mode (Dark `#1E0A14` & Rose `#D49A9A`) with anti-flash script and WCAG AA contrast.
-  - Responsive table layout collapsing to stacked cards on mobile screens (<768px).
-  - Detailed analytics with Recharts: latency trend line, range selector (24h / 7d), uptime percentage, average latency, p95 latency, and incident error logs.
-  - Gaps rendered for failed checks instead of misleading zero-latency plots.
-
----
-
-## Environment Variables
-
-### Server (`server/.env`)
-
-| Variable | Description | Example |
-| :--- | :--- | :--- |
-| `PORT` | Port for Express server | `4000` |
-| `MONGODB_URI` | MongoDB connection URI | `mongodb://127.0.0.1:27017/uptime` |
-| `JWT_SECRET` | Secret key for JWT signing (min 16 chars) | `replace-with-a-long-random-string` |
-| `CLIENT_ORIGIN`| Allowed CORS frontend origin | `http://localhost:5173` |
-| `CRON_SECRET`  | Secret for `POST /api/internal/run-checks` (min 16 chars) | `replace-with-cron-secret` |
-| `NODE_ENV`     | Runtime environment (`development`, `production`, `test`) | `development` |
-
-### Client (`client/.env`)
-
-| Variable | Description | Example |
-| :--- | :--- | :--- |
-| `VITE_API_URL` | Base URL for backend API | `http://localhost:4000/api` |
-
----
-
-## Local Development & Setup
+## Quick Start (Local Development)
 
 ### Prerequisites
-- Node.js (v20+)
-- MongoDB running locally or a MongoDB Atlas URI
 
-### 1. Installation
-This is an npm workspaces monorepo. One command installs all dependencies:
+- Node.js ≥ 20
+- MongoDB (local or Atlas connection string)
+
+### Installation
+
 ```bash
+# Install root dependencies (includes concurrently for dev)
 npm install
+
+# Install workspace dependencies
+npm install --workspaces
 ```
 
-### 2. Configuration
-Create `.env` in `server/` and `client/`:
-```bash
-cp server/.env.example server/.env
-cp client/.env.example client/.env
+### Environment Variables
+
+> **Note:** The values below are for **local development only** (your machine). For production, set these in your hosting platform dashboards (Vercel/Render), not in the repo. The `.env` files are gitignored.
+
+**Server** (`server/.env` for local dev):
+```env
+PORT=4000
+MONGODB_URI=mongodb://127.0.0.1:27017/uptime
+JWT_SECRET=your-long-random-secret-at-least-16-chars
+CLIENT_ORIGIN=http://localhost:5173
+CRON_SECRET=your-different-long-random-secret
+NODE_ENV=development
 ```
 
-### 3. Verification & Tests
-Run typecheck, lint, and test suites across all packages:
-```bash
-# Typecheck (both packages)
-npm run typecheck
-
-# Linting (both packages)
-npm run lint
-
-# Run all test suites (both packages)
-npm run test
+**Client** (`client/.env` for local dev):
+```env
+VITE_API_URL=http://localhost:4000/api
 ```
 
-**Test coverage breakdown**:
-| Package | Test Files | Tests |
-|:---|:---|:---|
-| `server` | 5 (SSRF, Auth, URL routes, Monitor, Stats) | 77 |
-| `client` | 2 (StatusBadge, ThemeContext) | 4 |
-| **Total** | **7** | **81** |
+**Production values (set in platform dashboards):**
 
-> **Note**: Server tests require network access (MongoMemoryServer). Run from a terminal with internet access, not inside a restricted sandbox.
+| Variable | Render (Backend) | Vercel (Frontend) |
+|----------|------------------|-------------------|
+| `PORT` | `10000` (Render assigns) | — |
+| `MONGODB_URI` | Your Atlas connection string | — |
+| `JWT_SECRET` | Long random string (≥16 chars) | — |
+| `CLIENT_ORIGIN` | `https://your-frontend.vercel.app` | — |
+| `CRON_SECRET` | Long random string (for external cron) | — |
+| `NODE_ENV` | `production` | — |
+| `VITE_API_URL` | — | `https://your-backend.onrender.com/api` |
 
-### 4. Running Locally
-Run server and client concurrently:
+Copy from `.env.example` files and fill in your local values. For production, configure in Vercel/Render project settings.
+
+### Development
+
 ```bash
+# Run both client and server concurrently
 npm run dev
-```
-- Client runs on: `http://localhost:5173`
-- Server runs on: `http://localhost:4000`
 
----
-
-## Project Structure
-
-```
-api-uptime-monitor/
-├── client/                      # React 19 SPA (Vite)
-│   ├── src/
-│   │   ├── api/                 # Axios client with JWT interceptor
-│   │   ├── components/          # Header, Modals, Charts, Badges
-│   │   ├── context/             # AuthContext, ThemeContext
-│   │   ├── hooks/               # useUrls, useChecks (with auto-refresh)
-│   │   ├── pages/               # Login, Signup, Dashboard, Detail
-│   │   ├── types/               # Shared TypeScript interfaces
-│   │   └── lib/                 # Utilities (cn, date formatting)
-│   ├── .env.example
-│   └── vite.config.ts
-└── server/                      # Express API
-    ├── src/
-    │   ├── config/              # Env validation (Zod), constants
-    │   ├── db/                  # Mongoose connection
-    │   ├── jobs/                # node-cron scheduler
-    │   ├── middleware/          # Auth, rate-limit, validate, error-handler
-    │   ├── models/              # User, MonitoredUrl, Check (Mongoose)
-    │   ├── repositories/        # DB access layer
-    │   ├── routes/              # Auth, URL, Health, Internal routes
-    │   └── services/            # Auth, Monitor, SSRF, Stats, Token, URLs
-    ├── .env.example
-    └── vitest.config.ts
+# Or run individually:
+npm run dev --workspace=server   # http://localhost:4000
+npm run dev --workspace=client   # http://localhost:5173
 ```
 
----
+### Build & Typecheck
 
-## Production Deployment Guide
+```bash
+npm run build       # Builds both workspaces
+npm run typecheck   # TypeScript check both workspaces
+npm run lint        # ESLint both workspaces
+npm run test        # Vitest both workspaces
+```
 
-### 1. Database (MongoDB Atlas)
-1. Create a free M0 cluster on MongoDB Atlas.
-2. Under Network Access, allow IP access (or `0.0.0.0/0` with user/pass authentication).
-3. Copy the connection URI into `MONGODB_URI`.
+## API Specification
 
-### 2. Backend (Render)
-1. Create a **Web Service** pointing to the repository.
-2. Root Directory: `server`
-3. Build Command: `npm install && npm run build`
-4. Start Command: `npm start`
-5. Set environment variables (`PORT`, `MONGODB_URI`, `JWT_SECRET`, `CLIENT_ORIGIN`, `CRON_SECRET`, `NODE_ENV=production`).
+All routes prefixed `/api`. All responses JSON. Errors: `{ "error": "message" }`.
 
-### 3. External Cron (cron-job.org or UptimeRobot)
-Render free services spin down after 15 minutes of inactivity. To keep checks firing every 5 minutes and keep the instance alive:
-1. Create a free recurring job on [cron-job.org](https://cron-job.org).
-2. URL: `https://your-render-backend.onrender.com/api/internal/run-checks`
-3. Method: `POST`
-4. Schedule: Every 5 minutes (`*/5 * * * *`)
-5. Request Header: `x-cron-secret: <YOUR_CRON_SECRET>`
+| Method | Route | Auth | Description |
+|--------|-------|------|-------------|
+| POST | /auth/signup | No | Create account, return token |
+| POST | /auth/login | No | Return token |
+| GET | /auth/me | Yes | Current user |
+| POST | /urls | Yes | Add URL (SSRF validated) |
+| GET | /urls | Yes | List user's URLs with latest status & 24h uptime |
+| GET | /urls/:id/checks?range=24h\|7d | Yes | Check history for charts |
+| DELETE | /urls/:id | Yes | Delete URL and its checks |
+| POST | /internal/run-checks | Secret header | Trigger a monitoring run |
+| GET | /health | No | Health check |
 
-> **Tip**: Generate a strong secret with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`. Set the same value as `CRON_SECRET` in Render and as the header value in cron-job.org.
+**Ownership enforcement:** Every `:id` route verifies the resource belongs to the authenticated user (returns 404, not 403).
 
-### 4. Frontend (Vercel)
-1. Import repository on Vercel.
-2. Root Directory: `client`
-3. Framework Preset: `Vite`
-4. Build Command: `npm run build`
-5. Output Directory: `dist`
-6. Set Environment Variable: `VITE_API_URL=https://your-render-backend.onrender.com/api`
-7. After Vercel deploys, go back to Render and update `CLIENT_ORIGIN` to your Vercel URL (e.g. `https://your-app.vercel.app`). This is required for CORS to allow frontend requests.
+## Security
 
----
+### SSRF Protection (Critical)
 
-## Acceptance Criteria Checklist
+The server fetches user-supplied URLs, so it must block internal targets:
 
-- [x] A new user can sign up, add a URL, and see results.
-- [x] Adding a 6th URL is rejected with status 400.
-- [x] Adding `http://169.254.169.254` or `http://localhost:3000` is rejected by SSRF guard.
-- [x] Deliberately unreachable URL shows Offline with error reason and gap in chart.
-- [x] Old checks are automatically purged after 7 days by TTL index.
-- [x] Theme toggle persists across reloads without theme flash.
-- [x] Mobile-responsive layout collapses table to cards at 360px and 768px.
-- [x] Continuous monitoring supported in production via external cron trigger.
+1. **Scheme validation** — Only `http` and `https` allowed; credentials (`user:pass@`) rejected.
+2. **Hostname blocklist** — `localhost`, `*.local`, `*.internal`, `metadata.google.internal`, `metadata.internal`.
+3. **DNS resolution & IP blocklist** — Resolves hostname and rejects if any IP falls in private/reserved ranges:
+   - IPv4: `127.0.0.0/8`, `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, `169.254.0.0/16` (cloud metadata), `0.0.0.0/8`, `100.64.0.0/10`, `192.0.0.0/24`, `192.0.2.0/24`, `198.18.0.0/15`, `198.51.100.0/24`, `203.0.113.0/24`, `224.0.0.0/4`, `240.0.0.0/4`
+   - IPv6: `::1`, `fc00::/7` (ULA), `fe80::/10` (link-local), `ff00::/8` (multicast), IPv4-mapped IPv6 (`::ffff:x.x.x.x`)
+4. **Re-validation at check time** — DNS is resolved fresh on every check; connection uses the validated IP to prevent DNS rebinding.
+5. **Redirect validation** — Each redirect target is re-validated before following; max 3 redirects.
+
+Implementation: `server/src/services/ssrf.ts` with 30 unit tests covering all blocked ranges and valid public URLs.
+
+### Other Security Measures
+
+- **Rate limiting:** `express-rate-limit` — 10 req/15min per IP on `/api/auth/*`, 300 req/15min on other routes.
+- **Helmet** for security headers; **CORS** restricted to `CLIENT_ORIGIN` only.
+- **Input validation:** Zod schemas on all bodies; JSON body limit 10kb.
+- **NoSQL injection protection:** `express-mongo-sanitize` middleware.
+- **Secrets** only in environment variables; `.env.example` provided; `.env` gitignored.
+- **Generic auth errors** — Login failure doesn't reveal if email exists.
+- **No stack traces** in production error responses.
+- **Structured logging** (pino) — never logs passwords or tokens.
+
+## Monitoring Engine
+
+- **Scheduler:** `node-cron` runs every 5 minutes (`*/5 * * * *`).
+- **Concurrency:** Bounded to 10 simultaneous requests (`CHECK_CONCURRENCY`).
+- **Per-request:** 10 second timeout, max 3 redirects, `HEAD` first with fallback to `GET` on 405/501.
+- **User-Agent:** `UptimeMonitorBot/1.0`.
+- **Latency measurement:** Monotonic clock (`performance.now()`), not `Date.now()`.
+- **Check result:** `urlId`, `timestamp`, `statusCode` (null on network failure), `latencyMs`, `isUp` (200-399 = up), `error` (e.g., `TIMEOUT`, `DNS_FAILURE`, `CONNECTION_REFUSED`).
+- **Parent URL update:** `lastStatus`, `lastLatencyMs`, `lastCheckedAt`.
+- **Overlap prevention:** If a run is in progress, the next tick is skipped.
+- **Startup run:** One check runs immediately on server start so dashboard isn't empty.
+- **Error isolation:** Failures in one check never crash the process; caught and logged per URL.
+
+## Data Retention
+
+- **Check history:** 7 days via MongoDB TTL index on `timestamp` (`expireAfterSeconds: 604800`).
+- **Indexes:** `{urlId, timestamp}` for fast range queries.
+- **Volume estimate:** 5 URLs × 288 checks/day = 1,440 checks/user/5 days — well within Atlas free tier (512 MB).
+
+## Scheduler Hosting (Important for Render)
+
+Render free web services spin down after ~15 minutes without inbound traffic, stopping in-process `node-cron`. This project implements **both**:
+
+1. **In-process `node-cron`** — Works for local development and always-on hosts.
+2. **External cron endpoint:** `POST /api/internal/run-checks` requiring header `x-cron-secret` matching `CRON_SECRET` env var.
+
+**Production setup:** Configure an external free scheduler (cron-job.org, UptimeRobot, or GitHub Actions) to call:
+```
+POST https://your-backend.onrender.com/api/internal/run-checks
+Header: x-cron-secret: YOUR_CRON_SECRET
+Schedule: Every 5 minutes
+```
+
+This keeps the Render instance awake and ensures checks run reliably.
+
+## Frontend Features
+
+- **Dashboard:** Table (desktop) / cards (mobile <768px) with name, URL, status badge (Online/Offline/Pending), last latency, 24h uptime %, last checked (relative time).
+- **Add URL:** Modal with inline validation, 5-URL cap enforced.
+- **Delete URL:** Confirmation modal.
+- **Detail view:** Recharts line chart (24h/7d range), uptime %, average latency, p95 latency, recent failures table.
+- **Chart behavior:** Failed checks show as gaps (not zero latency) via `connectNulls={false}`.
+- **Auto-refresh:** Every 60 seconds on both dashboard and detail pages.
+- **Theme:** Light/dark mode with OS preference default, persisted in localStorage, no flash (class applied before paint).
+- **Typography:** Story Script for headings/logo; system sans-serif for body; monospace for URLs/latency.
+- **Accessibility:** Semantic HTML, labelled forms, visible focus rings, keyboard-operable dialogs, status conveyed by text + color.
+
+## Deployment
+
+### Backend (Render)
+
+1. Create new **Web Service** from GitHub repo.
+2. Root directory: `server`
+3. Build command: `npm install && npm run build`
+4. Start command: `npm start`
+5. Environment variables: `PORT`, `MONGODB_URI`, `JWT_SECRET`, `CLIENT_ORIGIN`, `CRON_SECRET`, `NODE_ENV=production`
+6. Add external cron (cron-job.org) calling `POST /api/internal/run-checks` every 5 minutes.
+
+### Frontend (Vercel)
+
+1. Import GitHub repo.
+2. Root directory: `client`
+3. Framework: Vite (auto-detected)
+4. Build command: `npm run build`
+5. Output directory: `dist`
+6. Environment variable: `VITE_API_URL=https://your-backend.onrender.com/api`
+
+### Database (MongoDB Atlas)
+
+1. Create free M0 cluster.
+2. Add database user and network access (0.0.0.0/0 for Render).
+3. Connection string → `MONGODB_URI`.
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Frontend | React 19, Vite, TypeScript, Tailwind CSS v4, Recharts, React Router v7 |
+| Backend | Node.js, Express, TypeScript, Mongoose, JWT (jsonwebtoken), bcrypt, node-cron |
+| Security | helmet, cors, express-rate-limit, express-mongo-sanitize, zod |
+| Logging | pino |
+| Testing | Vitest, mongodb-memory-server, supertest, @testing-library/react |
+| Dev Tools | ESLint (typescript-eslint), concurrently, tsx |
+
+## License
+
+MIT

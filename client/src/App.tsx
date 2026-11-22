@@ -9,6 +9,7 @@ import { LoginPage } from './pages/login-page.tsx';
 import { SignupPage } from './pages/signup-page.tsx';
 import { DashboardPage } from './pages/dashboard-page.tsx';
 import { DetailPage } from './pages/detail-page.tsx';
+import { LandingPage } from './pages/landing-page.tsx';
 
 export function App() {
   return (
@@ -20,10 +21,11 @@ export function App() {
               <Header />
               <main className="flex-1">
                 <Routes>
+                  <Route path="/" element={<LandingPage />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/signup" element={<SignupPage />} />
                   <Route element={<ProtectedRoute />}>
-                    <Route path="/" element={<DashboardPage />} />
+                    <Route path="/dashboard" element={<DashboardPage />} />
                     <Route path="/urls/:id" element={<DetailPage />} />
                   </Route>
                   <Route path="*" element={<Navigate to="/" replace />} />
