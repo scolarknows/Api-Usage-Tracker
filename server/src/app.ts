@@ -14,6 +14,7 @@ import { urlRouter } from './routes/url-routes.js';
 
 export function createApp(): express.Express {
   const app = express();
+  app.enable('trust proxy'); // Trust X-Forwarded-For from Render/Vercel proxy
   app.disable('x-powered-by');
   app.use(helmet());
   app.use(cors({ origin: env.CLIENT_ORIGIN }));
