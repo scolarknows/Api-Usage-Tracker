@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { HeroStatusRow } from '../components/hero-status-row';
 import { FeatureCard } from '../components/feature-card';
 import { useAuth } from '../context/auth-context';
@@ -6,12 +6,13 @@ import { useEffect } from 'react';
 
 export function LandingPage() {
   const { user, loading } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!loading && user) {
-      window.location.href = '/dashboard';
+      navigate('/dashboard');
     }
-  }, [user, loading]);
+  }, [user, loading, navigate]);
 
   if (loading) {
     return (

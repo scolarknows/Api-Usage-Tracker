@@ -20,11 +20,10 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      if (window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
-        window.location.href = '/login';
-      }
+    // Only handle 401 errors if the user is actively authenticated
+    if (error.response?.status === 401 && localStorage.getItem('token')) {
+      // Do NOT unconditionally clear token or redirect here.
+      // Let the calling component handle 401 responses.
     }
     return Promise.reject(error);
   },

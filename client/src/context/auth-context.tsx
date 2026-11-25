@@ -19,11 +19,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     async function loadUser() {
-      if (!token) {
+      const storedToken = localStorage.getItem('token');
+      if (!storedToken) {
         setUser(null);
         setLoading(false);
         return;
       }
+
+      // If token exists in localStorage, set it in state to trigger this effect
+      if (token !== storedToken) {
+        setToken(storedToken);
+      }
+
       try {
         const res = await apiClient.get<{ user: User }>('/auth/me');
         setUser(res.data.user);
