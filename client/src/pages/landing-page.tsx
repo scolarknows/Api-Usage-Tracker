@@ -214,10 +214,19 @@ export function LandingPage() {
             </dl>
             <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 md:grid-cols-3 max-w-4xl mx-auto">
               <div className="group bg-white dark:bg-dark-surface rounded-xl p-6 shadow-lg transition-shadow hover:shadow-2xl">
-                <h3 className="font-story text-xl font-bold text-wine dark:text-rose mb-2">Pro</h3>
-                <p className="text-3xl font-bold text-wine dark:text-rose mb-1">$12.99<span className="text-xs font-mono text-wine/60">/ month</span></p>
+                <h3 className="font-story text-xl font-bold text-wine dark:text-rose mb-2">Free</h3>
+                <p className="text-lg text-wine/60 dark:text-rose/50 mb-1">Free</p>
                 <ul className="list-disc pl-5 text-wine/70 dark:text-rose/60 space-y-2">
-                  <li>✓ Unlimited URLs</li>
+                  <li>✓ Up to 5 URLs</li>
+                  <li>✓ Dashboard only</li>
+                  <li>✓ 7-day retention</li>
+                </ul>
+              </div>
+              <div className="group bg-white dark:bg-dark-surface rounded-xl p-6 shadow-lg transition-shadow hover:shadow-2xl">
+                <h3 className="font-story text-xl font-bold text-wine dark:text-rose mb-2">Pro</h3>
+                <p className="text-3xl font-bold text-wine dark:text-rose mb-1">$4.99<span className="text-xs font-mono text-wine/60">/ month</span></p>
+                <ul className="list-disc pl-5 text-wine/70 dark:text-rose/60 space-y-2">
+                  <li>✓ Up to 15 URLs</li>
                   <li>✓ Email alerts</li>
                   <li>✓ API access</li>
                   <li>✓ 30-day retention</li>
@@ -225,11 +234,12 @@ export function LandingPage() {
               </div>
               <div className="group bg-white dark:bg-dark-surface rounded-xl p-6 shadow-lg transition-shadow hover:shadow-2xl">
                 <h3 className="font-story text-xl font-bold text-wine dark:text-rose mb-2">Premium</h3>
-                <p className="text-3xl font-bold text-wine dark:text-rose mb-1">$4.99<span className="text-xs font-mono text-wine/60">/ month</span></p>
+                <p className="text-3xl font-bold text-wine dark:text-rose mb-1">$12.99<span className="text-xs font-mono text-wine/60">/ month</span></p>
                 <ul className="list-disc pl-5 text-wine/70 dark:text-rose/60 space-y-2">
-                  <li>✓ Up to 5 URLs</li>
-                  <li>✓ Basic dashboard</li>
-                  <li>✓ Latency charts</li>
+                  <li>✓ Unlimited URLs</li>
+                  <li>✓ Email alerts</li>
+                  <li>✓ API access</li>
+                  <li>✓ 90-day retention</li>
                 </ul>
               </div>
             </div>
@@ -243,27 +253,8 @@ export function LandingPage() {
       <footer className="border-t border-mauve/20 dark:border-rose/20 py-12 px-4 sm:px-6 lg:px-8" role="contentinfo">
         <div className="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-mauve/70 dark:text-rose/50">
-            LaMon • API Monitoring Service
+            © 2026 LaMon. All rights reserved.
           </p>
-          <div className="flex items-center gap-2">
-            <a
-              href="https://github.com/scolarknows/Api-Usage-Tracker"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs font-medium text-wine dark:text-rose hover:text-mauve dark:hover:text-rose/70 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-2 dark:focus-visible:ring-offset-dark-bg rounded"
-            >
-              GitHub
-            </a>
-            <span className="text-xs text-mauve/60 dark:text-rose/50">•</span>
-            <a
-              href="/pricing"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs font-medium text-wine dark:text-rose hover:text-mauve dark:hover:text-rose/70 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-2 dark:focus-visible:ring-offset-dark-bg rounded"
-            >
-              Pricing
-            </a>
-          </div>
         </div>
       </footer>
     </div>
