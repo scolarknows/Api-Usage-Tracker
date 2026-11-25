@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, RefreshCw, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, RefreshCw } from 'lucide-react';
 import { useChecks } from '../hooks/use-checks.ts';
 import { LatencyChart } from '../components/latency-chart.tsx';
 
@@ -136,7 +136,10 @@ export function DetailPage() {
             {/* Recent Failures */}
             <div className="p-6 rounded-xl border border-rose/30 bg-surface/50 dark:bg-dark-card">
               <h2 className="font-story text-2xl font-bold text-wine dark:text-rose mb-4 flex items-center gap-2">
-                <AlertTriangle size={20} className="text-rose-500" />
+                <svg className="w-5 h-5 text-rose-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 9v3m0 0h3m0-3h-3m-6 0a6 6 0 1 0 0 12a6 6 0 0 0 0-12z" />
+                  <circle cx="12" cy="12" r="10" />
+                </svg>
                 Recent Incidents & Failures
               </h2>
               {history.recentFailures.length === 0 ? (

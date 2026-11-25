@@ -29,8 +29,7 @@ export function LandingPage() {
         <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="font-story text-2xl text-wine dark:text-rose">Uptime</span>
-              <span className="hidden sm:block text-sm text-mauve dark:text-rose/70">Monitor</span>
+              <span className="font-story text-2xl font-bold text-wine dark:text-rose tracking-wide">LaMon</span>
             </div>
             <div className="flex items-center gap-4">
               <Link
@@ -58,7 +57,9 @@ export function LandingPage() {
                 id="hero-heading"
                 className="font-story text-4xl sm:text-5xl lg:text-6xl font-normal text-wine dark:text-rose tracking-tight"
               >
-                API and URL Uptime and Latency Monitor <br />Monitored every 5 minutes.
+                API & URL Uptime<br/>
+                and Latency Monitor<br/>
+                Monitored every 5 minutes
               </h1>
               <p className="mt-6 text-lg sm:text-xl text-mauve dark:text-rose/70 max-w-2xl mx-auto">
                 Add up to 5 endpoints. Get status badges, uptime percentages, and latency charts —
@@ -204,15 +205,36 @@ export function LandingPage() {
               </div>
               <div className="flex items-start gap-4">
                 <dt className="font-medium text-wine dark:text-rose min-w-[140px] font-mono">Dashboard only</dt>
-                <dd>No alerting, no webhooks, no API access. Built for portfolio demonstration.</dd>
+                <dd>No alerting, no webhooks, no API access.</dd>
               </div>
               <div className="flex items-start gap-4">
                 <dt className="font-medium text-wine dark:text-rose min-w-[140px] font-mono">7-day retention</dt>
                 <dd>Check history auto-expires via MongoDB TTL index. ~1,440 checks per 5 URLs over 7 days.</dd>
               </div>
             </dl>
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 md:grid-cols-3 max-w-4xl mx-auto">
+              <div className="group bg-white dark:bg-dark-surface rounded-xl p-6 shadow-lg transition-shadow hover:shadow-2xl">
+                <h3 className="font-story text-xl font-bold text-wine dark:text-rose mb-2">Pro</h3>
+                <p className="text-3xl font-bold text-wine dark:text-rose mb-1">$12.99<span className="text-xs font-mono text-wine/60">/ month</span></p>
+                <ul className="list-disc pl-5 text-wine/70 dark:text-rose/60 space-y-2">
+                  <li>✓ Unlimited URLs</li>
+                  <li>✓ Email alerts</li>
+                  <li>✓ API access</li>
+                  <li>✓ 30-day retention</li>
+                </ul>
+              </div>
+              <div className="group bg-white dark:bg-dark-surface rounded-xl p-6 shadow-lg transition-shadow hover:shadow-2xl">
+                <h3 className="font-story text-xl font-bold text-wine dark:text-rose mb-2">Premium</h3>
+                <p className="text-3xl font-bold text-wine dark:text-rose mb-1">$4.99<span className="text-xs font-mono text-wine/60">/ month</span></p>
+                <ul className="list-disc pl-5 text-wine/70 dark:text-rose/60 space-y-2">
+                  <li>✓ Up to 5 URLs</li>
+                  <li>✓ Basic dashboard</li>
+                  <li>✓ Latency charts</li>
+                </ul>
+              </div>
+            </div>
             <p className="mt-8 text-center text-sm text-mauve/70 dark:text-rose/50">
-              This is a portfolio project — no paid tiers exist. The code is open source on GitHub.
+              The code is open source on GitHub.
             </p>
           </div>
         </section>
@@ -221,16 +243,27 @@ export function LandingPage() {
       <footer className="border-t border-mauve/20 dark:border-rose/20 py-12 px-4 sm:px-6 lg:px-8" role="contentinfo">
         <div className="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-mauve/70 dark:text-rose/50">
-            Built with React, Express, MongoDB, and Tailwind CSS v4
+            LaMon • API Monitoring Service
           </p>
-          <a
-            href="https://github.com/scolarknows/Api-Usage-Tracker"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm font-medium text-wine dark:text-rose hover:text-mauve dark:hover:text-rose/70 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-2 dark:focus-visible:ring-offset-dark-bg rounded"
-          >
-            View source on GitHub →
-          </a>
+          <div className="flex items-center gap-2">
+            <a
+              href="https://github.com/scolarknows/Api-Usage-Tracker"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-medium text-wine dark:text-rose hover:text-mauve dark:hover:text-rose/70 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-2 dark:focus-visible:ring-offset-dark-bg rounded"
+            >
+              GitHub
+            </a>
+            <span className="text-xs text-mauve/60 dark:text-rose/50">•</span>
+            <a
+              href="/pricing"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-medium text-wine dark:text-rose hover:text-mauve dark:hover:text-rose/70 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-2 dark:focus-visible:ring-offset-dark-bg rounded"
+            >
+              Pricing
+            </a>
+          </div>
         </div>
       </footer>
     </div>
