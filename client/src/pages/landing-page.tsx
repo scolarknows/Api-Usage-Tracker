@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { BarChart3, Timer, TrendingUp } from 'lucide-react';
 import { HeroStatusRow } from '../components/hero-status-row';
 import { FeatureCard } from '../components/feature-card';
 import { useAuth } from '../context/auth-context';
@@ -57,7 +58,7 @@ export function LandingPage() {
                 id="hero-heading"
                 className="font-story text-4xl sm:text-5xl lg:text-6xl font-normal text-wine dark:text-rose tracking-tight"
               >
-                API uptime & latency, <br />monitored every 5 minutes
+                API and URL Uptime and Latency Monitor <br />Monitored every 5 minutes.
               </h1>
               <p className="mt-6 text-lg sm:text-xl text-mauve dark:text-rose/70 max-w-2xl mx-auto">
                 Add up to 5 endpoints. Get status badges, uptime percentages, and latency charts —
@@ -127,17 +128,17 @@ export function LandingPage() {
               <FeatureCard
                 title="Uptime %"
                 description="Percentage of successful checks over 24h and 7d windows. Green when healthy, red when degraded."
-                icon="📊"
+                icon={<BarChart3 size={28} />}
               />
               <FeatureCard
                 title="Latency (ms)"
                 description="Monotonic-clock measured response time. Track average and p95. Failed checks show as gaps — never zero."
-                icon="⏱️"
+                icon={<Timer size={28} />}
               />
               <FeatureCard
                 title="7-day history"
                 description="Interactive Recharts line charts with 24h/7d range selector. Recent failures table with status codes and errors."
-                icon="📈"
+                icon={<TrendingUp size={28} />}
               />
             </div>
           </div>

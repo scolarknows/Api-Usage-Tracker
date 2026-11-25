@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
 import { apiClient } from '../api/client.ts';
 import { useAuth } from '../context/auth-context.tsx';
 import type { User } from '../types/api.ts';
@@ -7,6 +8,7 @@ import type { User } from '../types/api.ts';
 export function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const { setAuth } = useAuth();
@@ -22,7 +24,7 @@ export function LoginPage() {
         password,
       });
       setAuth(res.data.token, res.data.user);
-      navigate('/');
+      navigate('/dashboard');
     } catch (err: unknown) {
       const errorMsg =
         (err as { response?: { data?: { error?: string } } }).response?.data?.error ||
@@ -66,15 +68,26 @@ export function LoginPage() {
             <label className="block text-sm font-medium mb-1" htmlFor="password">
               Password
             </label>
-            <input
-              id="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border border-rose/40 bg-surface dark:bg-dark-surface focus:outline-none focus:ring-2 focus:ring-wine dark:focus:ring-rose text-wine dark:text-rose text-sm"
-              placeholder="••••••••"
-            />
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                required
+                maxLength={72}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-3 py-2 pr-10 rounded-lg border border-rose/40 bg-surface dark:bg-dark-surface focus:outline-none focus:ring-2 focus:ring-wine dark:focus:ring-rose text-wine dark:text-rose text-sm"
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                className="absolute inset-y-0 right-0 px-3 flex items-center text-wine/70 dark:text-rose/70 hover:text-wine dark:hover:text-rose cursor-pointer"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
           <button
             type="submit"
