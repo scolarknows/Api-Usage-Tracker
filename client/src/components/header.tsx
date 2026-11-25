@@ -8,7 +8,7 @@ export function Header() {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <header className="border-b border-rose/30 bg-surface/80 dark:bg-dark-bg/80 backdrop-blur sticky top-0 z-40">
+    <header className="border-b-2 border-rose/30 bg-surface/80 dark:bg-dark-bg/80 backdrop-blur sticky top-0 z-40 shadow-sm">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <span className="font-story text-2xl font-bold text-wine dark:text-rose tracking-wide">

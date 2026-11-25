@@ -24,9 +24,10 @@ export function LatencyChart({ points }: LatencyChartProps) {
 
   const formattedData = points.map((p) => {
     const d = new Date(p.timestamp);
-    const timeLabel = `${d.getMonth() + 1}/${d.getDate()} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+    const dateLabel = `${d.getMonth() + 1}/${d.getDate()}`;
+    const timeLabel = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
     return {
-      timestamp: timeLabel,
+      timestamp: `${dateLabel}\n${timeLabel}`, // stacked vertically
       latencyMs: p.latencyMs, // null when check failed!
       isUp: p.isUp,
       error: p.error,

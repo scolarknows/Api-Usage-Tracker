@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Trash2, ExternalLink, RefreshCw } from 'lucide-react';
+import { Plus, Trash2, ExternalLink } from 'lucide-react';
 import { useUrls } from '../hooks/use-urls.ts';
 import { StatusBadge } from '../components/status-badge.tsx';
 import { AddUrlModal } from '../components/add-url-modal.tsx';
@@ -25,13 +25,12 @@ export function DashboardPage() {
           </p>
         </div>
         <div className="flex items-center gap-3 w-full sm:w-auto">
-          <button
-            onClick={() => refresh()}
-            aria-label="Refresh"
-            className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg border border-rose/40 hover:bg-rose/10 text-wine dark:text-rose cursor-pointer"
-          >
-            <RefreshCw size={18} />
-          </button>
+          <div className="relative inline-flex items-center justify-center rounded-lg border border-rose/40 hover:bg-rose/10 text-wine dark:text-rose cursor-pointer">
+            <svg className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <path d="M4 11a9 9 0 0 1 9-9h.01m5.97-4.59A2.97 2.97 0 0 1 12 2.94a2.97 2.97 0 0 1 2.06 1.43l2.12 2.12m15.73-8.27a2.97 2.97 0 0 1 0 4.24l-2.12 2.12m0 0a2.97 2.97 0 0 1-4.24 0l-2.12-2.12m2.12 5.75h.01m6.36-9.37a3 3 0 1 0 0 6a3 3 0 0 0-6 0" />
+            </svg>
+            <span className="absolute -inset-0.5 rounded-lg border-2 border-transparent bg-rose/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
+          </div>
           <button
             onClick={() => setIsAddOpen(true)}
             disabled={urls.length >= 5}
@@ -92,6 +91,7 @@ export function DashboardPage() {
                   <tr
                     key={u.id}
                     className="hover:bg-rose/5 dark:hover:bg-dark-surface/30 transition-colors"
+                    style={{ borderWidth: '2px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
                   >
                     <td className="px-6 py-4">
                       <Link to={`/urls/${u.id}`} className="block group">
@@ -144,7 +144,7 @@ export function DashboardPage() {
             {urls.map((u) => (
               <div
                 key={u.id}
-                className="p-5 rounded-xl border border-rose/30 bg-surface/50 dark:bg-dark-card space-y-3"
+                className="p-5 rounded-xl border-2 border-rose/30 bg-surface/50 dark:bg-dark-card shadow-sm"
               >
                 <div className="flex items-start justify-between gap-2">
                   <Link to={`/urls/${u.id}`} className="block flex-1 min-w-0">
