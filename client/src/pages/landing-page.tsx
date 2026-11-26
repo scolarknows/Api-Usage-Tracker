@@ -217,8 +217,11 @@ export function LandingPage() {
                 id="limits-heading"
                 className="font-story text-3xl sm:text-4xl font-normal text-wine dark:text-rose"
               >
-                Current limits (Free tier)
+                Need to monitor more URLs?
               </h2>
+              <p className="mt-3 text-base text-mauve dark:text-rose/70">
+                Check out our other tiers.
+              </p>
             </header>
             <dl className="space-y-6 text-mauve dark:text-rose/70">
               <div className="flex items-start gap-4">
@@ -269,9 +272,6 @@ export function LandingPage() {
                 </ul>
               </div>
             </div>
-            <p className="mt-8 text-center text-sm text-mauve/70 dark:text-rose/50">
-              The code is open source on GitHub.
-            </p>
           </div>
         </section>
       </main>
