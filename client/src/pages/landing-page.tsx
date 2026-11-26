@@ -31,6 +31,32 @@ export function LandingPage() {
             <div className="flex items-center gap-2">
               <span className="font-story text-2xl font-bold text-wine dark:text-rose tracking-wide">LaMon</span>
             </div>
+            <div className="hidden md:flex items-center gap-6">
+              <a
+                href="#live-checks"
+                className="text-sm font-medium text-mauve dark:text-rose/70 hover:text-wine dark:hover:text-rose transition-colors"
+              >
+                Live checks
+              </a>
+              <a
+                href="#what-it-monitors"
+                className="text-sm font-medium text-mauve dark:text-rose/70 hover:text-wine dark:hover:text-rose transition-colors"
+              >
+                What it monitors
+              </a>
+              <a
+                href="#how-it-works"
+                className="text-sm font-medium text-mauve dark:text-rose/70 hover:text-wine dark:hover:text-rose transition-colors"
+              >
+                How it works
+              </a>
+              <a
+                href="#limits"
+                className="text-sm font-medium text-mauve dark:text-rose/70 hover:text-wine dark:hover:text-rose transition-colors"
+              >
+                Limits
+              </a>
+            </div>
             <div className="flex items-center gap-4">
               <Link
                 to="/login"
@@ -81,7 +107,7 @@ export function LandingPage() {
               </div>
             </div>
 
-            <div className="mt-16" aria-label="Live status examples">
+            <div id="live-checks" className="mt-16 scroll-mt-24" aria-label="Live status examples">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto" role="list">
                 <HeroStatusRow
                   method="GET"
@@ -112,7 +138,7 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-mauve/10 dark:bg-rose/5" aria-labelledby="what-heading">
+        <section id="what-it-monitors" className="py-20 px-4 sm:px-6 lg:px-8 bg-mauve/10 dark:bg-rose/5 scroll-mt-16" aria-labelledby="what-heading">
           <div className="mx-auto max-w-7xl">
             <header className="text-center max-w-2xl mx-auto mb-16">
               <h2
@@ -145,7 +171,7 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section className="py-20 px-4 sm:px-6 lg:px-8" aria-labelledby="how-heading">
+        <section id="how-it-works" className="py-20 px-4 sm:px-6 lg:px-8 scroll-mt-16" aria-labelledby="how-heading">
           <div className="mx-auto max-w-7xl">
             <header className="text-center max-w-2xl mx-auto mb-16">
               <h2
@@ -184,7 +210,7 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-mauve/10 dark:bg-rose/5" aria-labelledby="limits-heading">
+        <section id="limits" className="py-20 px-4 sm:px-6 lg:px-8 bg-mauve/10 dark:bg-rose/5 scroll-mt-16" aria-labelledby="limits-heading">
           <div className="mx-auto max-w-3xl">
             <header className="text-center mb-12">
               <h2
