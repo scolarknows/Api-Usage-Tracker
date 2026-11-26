@@ -12,8 +12,8 @@ export function Header() {
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <span className="font-story text-2xl font-bold text-wine dark:text-rose tracking-wide">
-            Uptime & Latency Monitor
-          </span>
+              LaMon
+            </span>
         </Link>
         <div className="flex items-center gap-3">
           <button
