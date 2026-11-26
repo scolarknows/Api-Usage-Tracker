@@ -223,24 +223,6 @@ export function LandingPage() {
                 Check out our other tiers.
               </p>
             </header>
-            <dl className="space-y-6 text-mauve dark:text-rose/70">
-              <div className="flex items-start gap-4">
-                <dt className="font-medium text-wine dark:text-rose min-w-[140px] font-mono">5 URLs</dt>
-                <dd>Maximum monitored endpoints per account. Delete one to add another.</dd>
-              </div>
-              <div className="flex items-start gap-4">
-                <dt className="font-medium text-wine dark:text-rose min-w-[140px] font-mono">5 min interval</dt>
-                <dd>Checks run on a fixed schedule via external cron (cron-job.org / UptimeRobot).</dd>
-              </div>
-              <div className="flex items-start gap-4">
-                <dt className="font-medium text-wine dark:text-rose min-w-[140px] font-mono">Dashboard only</dt>
-                <dd>No alerting, no webhooks, no API access.</dd>
-              </div>
-              <div className="flex items-start gap-4">
-                <dt className="font-medium text-wine dark:text-rose min-w-[140px] font-mono">7-day retention</dt>
-                <dd>Check history auto-expires via MongoDB TTL index. ~1,440 checks per 5 URLs over 7 days.</dd>
-              </div>
-            </dl>
             <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 md:grid-cols-3 max-w-4xl mx-auto">
               <div className="group bg-white dark:bg-dark-surface rounded-xl p-6 shadow-lg transition-shadow hover:shadow-2xl">
                 <h3 className="font-story text-xl font-bold text-wine dark:text-rose mb-2">Free</h3>
