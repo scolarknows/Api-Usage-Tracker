@@ -1,6 +1,6 @@
-# API Uptime & Latency Monitor
+# LaMon — API & URL Uptime & Latency Monitor
 
-A full-stack web application for monitoring API/website uptime and latency. Users sign up, add up to 5 URLs, and a background scheduler checks each URL every 5 minutes. The dashboard shows status badges, uptime percentages, and latency charts.
+A full-stack web application for monitoring API and website uptime and latency. Users can sign up, add up to 5 URLs, and view live status badges, uptime percentages, and latency charts on a clean dashboard while a background scheduler checks each endpoint every 5 minutes.
 
 ## Live Demo
 
@@ -56,7 +56,7 @@ npm install --workspaces
 PORT=4000
 MONGODB_URI=mongodb://127.0.0.1:27017/uptime
 JWT_SECRET=your-long-random-secret-at-least-16-chars
-CLIENT_ORIGIN=http://localhost:5173
+CLIENT_ORIGIN=http://localhost:5173,https://your-frontend.vercel.app
 CRON_SECRET=your-different-long-random-secret
 NODE_ENV=development
 ```
@@ -162,7 +162,7 @@ Implementation: `server/src/services/ssrf.ts` with 30 unit tests covering all bl
 
 - **Check history:** 7 days via MongoDB TTL index on `timestamp` (`expireAfterSeconds: 604800`).
 - **Indexes:** `{urlId, timestamp}` for fast range queries.
-- **Volume estimate:** 5 URLs × 288 checks/day = 1,440 checks/user/5 days — well within Atlas free tier (512 MB).
+- **Volume estimate:** 5 URLs × 288 checks/day = 1,440 checks/day (~10,080 checks over 7 days) — well within Atlas free tier (512 MB).
 
 ## Scheduler Hosting (Important for Render)
 
@@ -182,6 +182,7 @@ This keeps the Render instance awake and ensures checks run reliably.
 
 ## Frontend Features
 
+- **Auth:** Email/password signup & login with live password strength feedback (8–72 chars, uppercase, lowercase, number, special character) and show/hide password toggle.
 - **Dashboard:** Table (desktop) / cards (mobile <768px) with name, URL, status badge (Online/Offline/Pending), last latency, 24h uptime %, last checked (relative time).
 - **Add URL:** Modal with inline validation, 5-URL cap enforced.
 - **Delete URL:** Confirmation modal.
